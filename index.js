@@ -2,41 +2,40 @@ import chalk from 'chalk';
 import inquirer from 'inquirer';
 import {createSpinner} from 'nanospinner';
 import fs from 'fs';
+import figlet from 'figlet';
 
-const warning = chalk.hex('#FFA500');
 let typeFile
 let nameFile;
-let fckfile = "salut.html"
 
 
-async function welcome(){
-    console.log("Salut")
+ function welcome(){
+    console.clear
+    figlet('GenFi', function(data) {
+        console.log(chalk.magenta(data))
+    });
+
 }
 
 async function askWitchFile(){
 
-    console.clear
   
     const answer = await
         inquirer.prompt({
         "name": "type_file",
         "type": "list",
-        "message": "Quel fichier voulez-vous génerer ?",
+        "message": "Which type of file do you want to generate ?",
         "choices": [
-            "HTML",
-            chalk.blue("CSS"),
-            chalk.yellow("JavaScript"),
-            chalk.green("Vue.js"),
+            chalk.red("Html"),
+            chalk.blue("Css"),
             chalk.grey("Php"),
-            chalk.cyan("React"),
+            chalk.yellow("JavaScript"),
+            // chalk.green("Vue.js"),
+            // chalk.cyan("React"),
         ]
 
     })
 
     typeFile = answer.type_file
-
-    console.log(typeFile);
-
 }
 
 async function askNameFile(){
@@ -45,7 +44,7 @@ async function askNameFile(){
         inquirer.prompt({
             "name": "name_file",
             "type": "input",
-            "message": "Quel est le nom de votre fichier ?",
+            "message": "What is the name of your file?",
             
         })
 
@@ -55,14 +54,78 @@ async function askNameFile(){
 
 async function generateFile(){
 
-        // console.log(chalk.bold.green("Votre fichier va etre généré ! Attendez"));
+    const spinner = createSpinner('Your file will be generated!').start();
 
-        const spinner = createSpinner('Votre fichier va etre généré !').start();
+    if(typeFile === chalk.red("Html")){
+            fs.writeFile(nameFile+ '.html', `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>${nameFile}</title>
+    </head>
+    <body>
+        
+    </body>
+    </html>`, function (err) {
+        if (err){
+            spinner.error({text:"Error, Your file has not been generated"})
+            throw err
+        };
 
-        fs.writeFile(nameFile+ '.' + typeFile,'la data', function (err) {
-            if (err) throw err;
-            spinner.success()
-          });
+        spinner.success({text:"Your file has been generated"})
+        }); 
+    }
+    
+    if(typeFile === chalk.blue("Css")){
+        fs.writeFile(nameFile+ '.css', `body{}`, function (err) {
+            if (err){
+                spinner.error({text:"Error, Your file has not been generated"})
+                throw err
+            };
+
+            spinner.success({text:"Your file has been generated"})
+            }); 
+    }
+
+
+    if(typeFile === chalk.grey("Php")){
+        fs.writeFile(nameFile+ '.php', `
+        <html>
+        <head>
+        <title>${nameFile}</title>
+        </head>
+        <body>
+        <?php echo '<p>Hello World !</p>'; ?>
+        </body>
+        </html>
+        `
+        , function (err) {
+            if (err){
+                spinner.error({text:"Error, Your file has not been generated"})
+                throw err
+            };
+
+            spinner.success({text:"Your file has been generated"})
+            }); 
+    }
+
+    if(typeFile === chalk.yellow("JavaScript")){
+        fs.writeFile(nameFile+ '.js', ``
+        , function (err) {
+            if (err){
+                spinner.error({text:"Error, Your file has not been generated"})
+                throw err
+            };
+
+            spinner.success({text:"Your file has been generated"})
+            }); 
+    }
+
+
+      
 
 }
 
@@ -70,7 +133,8 @@ async function generateFile(){
 
 //Script
 
+
 await askWitchFile()
 await askNameFile()
 await generateFile()
-
+welcome()
